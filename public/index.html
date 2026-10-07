@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>site1</title>
+<style>
+  body { margin: 0; font: 18px/1.6 system-ui, sans-serif; background: #143222; color: #e9f3e6;
+         min-height: 100vh; display: grid; place-items: center; }
+  main { max-width: 440px; padding: 24px; }
+  h1 { margin: 0 0 6px; font-size: 2.2rem; }
+  p { color: #a9c4b0; margin: 0 0 22px; }
+  .box { background: #0c1b13; border-radius: 10px; padding: 16px 18px; font: 15px/1.7 ui-monospace, monospace; }
+  .ok { color: #86cc4e; } .bad { color: #ff7b72; }
+  button { margin-top: 18px; font: inherit; padding: 8px 16px; border-radius: 6px; border: 0;
+           background: #3c873a; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="hi">Loading...</h1>
+  <p>Running on my own VPS.</p>
+  <div class="box" id="box">checking /health ...</div>
+  <button id="boom">Break it</button>
+</main>
+<script>
+  async function load() {
+    try {
+      const d = await (await fetch('/health')).json();
+      document.getElementById('hi').textContent = d.greeting + ' from site1!';
+      document.getElementById('box').innerHTML =
+        '<span class="ok">status: ok</span><br>node: ' + d.node + '<br>uptime: ' + d.uptime + 's';
+    } catch (e) {
+      document.getElementById('box').innerHTML = '<span class="bad">health check failed</span>';
+    }
+  }
+  document.getElementById('boom').onclick = async () => {
+    const r = await fetch('/boom');
+    document.getElementById('box').innerHTML = '<span class="bad">/boom returned ' + r.status + '</span>';
+  };
+  load();
+  setInterval(load, 5000);
+</script>
+</body>
+</html>
+
